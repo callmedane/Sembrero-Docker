@@ -1,0 +1,26 @@
+---
+- name: Build and Run Nginx Docker Container
+  hosts: localhost
+  connection: local
+  become: true
+
+  tasks:
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Build Docker image manually
+      command: docker build -t nginx_ansible .
+
+    - name: Run Nginx container manually
+      command: docker run -d -p 8080:80 --name nginx_container nginx_ansible
+      args:
+        creates: /var/lib/docker/containers
